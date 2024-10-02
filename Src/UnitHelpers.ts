@@ -23,6 +23,11 @@ export class UnitHelpers {
         "entities/vasari_loyalist_titan.unit"
     ];
 
+    public static Advent: string[] = [
+        "entities/advent_loyalist.player",
+        "entities/advent_rebel.player"
+    ];
+
     public static AllFactions: string[] = [
         "entities/trader_loyalist.player",
         "entities/trader_rebel.player",

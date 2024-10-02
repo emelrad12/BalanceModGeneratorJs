@@ -11,13 +11,13 @@ import {
 const techToAdd: any[] = [];
 
 function GenericRepeatableCost(i: number) {
-    return new Price(0, 5000 + 1000 * i, 5000 + 1000 * i);
+    return new Price(0, 2000 + 1000 * i, 2000 + 1000 * i);
 }
 
 function GenericRepeatableExotic(i: number) {
     return [{
         exotic_type: "ultimate",
-        count: 10 * i
+        count: 10 + 2 * i
     }];
 }
 
@@ -29,17 +29,17 @@ function GenerateOffensiveTechs() {
                 {
                     "value_behavior": "scalar",
                     "modifier_type": "damage",
-                    "value": 0.1
+                    "value": 0.05
                 },
                 {
                     "value_behavior": "scalar",
                     "modifier_type": "cooldown_duration",
-                    "value": -0.03
+                    "value": -0.01
                 },
                 {
                     "value_behavior": "scalar",
                     "modifier_type": "range",
-                    "value": 0.05
+                    "value": 0.025
                 }],
 
         };
@@ -69,17 +69,17 @@ function GenerateDefensiveTechs() {
                 {
                     "modifier_type": "max_shield_points",
                     "value_behavior": "scalar",
-                    "value": 0.15
+                    "value": 0.07
                 },
                 {
                     "modifier_type": "max_hull_points",
                     "value_behavior": "scalar",
-                    "value": 0.15
+                    "value": 0.07
                 },
                 {
                     "modifier_type": "max_armor_points",
                     "value_behavior": "scalar",
-                    "value": 0.15
+                    "value": 0.07
                 }
             ]
         };

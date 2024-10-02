@@ -6,29 +6,9 @@ const sourceFilesPath = path.join(process.env['ProgramFiles(x86)']!, 'Steam', 's
 const targetFilesPath = path.join(process.env['USERPROFILE']!, "AppData", "Local", "sins2", "mods", "TheBestOverhaulMod") + '\\';
 const alreadyModifiedFiles = new Map<string, object>();
 
-export function safeAssign(obj: any, path: any, value: any) {
-    let keys = path.split('.');
-    let lastKey = keys.pop();
-    let target = obj;
-
-    for (let key of keys) {
-        if (!(key in target)) {
-            console.warn(`Property ${key} does not exist.`);
-            return; // Exit if any part of the path does not exist.
-        }
-        target = target[key];
-    }
-
-    if (lastKey in target) {
-        target[lastKey] = value; // Only assign if the last property exists.
-    } else {
-        console.warn(`Property ${lastKey} does not exist on the object.`);
-    }
-}
-
 export function Init() {
     if (fs.existsSync(targetFilesPath)) {
-        fs.rmSync(targetFilesPath, {recursive: true});
+        // fs.rmSync(targetFilesPath, {recursive: true});
     }
 }
 
@@ -39,9 +19,12 @@ function CreateDirectoryForFileIfNotExists(filePath: string) {
     }
 }
 
-export function LoadJsonFile(filePath: string): object {
+export function LoadJsonFile(filePath: string): object | undefined {
     if (alreadyModifiedFiles.has(filePath)) return alreadyModifiedFiles.get(filePath)!;
     filePath = sourceFilesPath + filePath;
+    if (!fs.existsSync(filePath)) {
+        return undefined;
+    }
     const fileContent = readFileSync(filePath, 'utf-8');
     return JSON.parse(fileContent);
 }
@@ -62,7 +45,7 @@ export function SaveJsonFile(filePath: string, content: object) {
 }
 
 function ReadModifyAndSaveJsonFile(filePath: string, modify: (content: object) => void) {
-    let content = LoadJsonFile(filePath);
+    let content = LoadJsonFile(filePath)!;
     modify(content);
     SaveJsonFile(filePath, content);
 }

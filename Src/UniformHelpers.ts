@@ -1,16 +1,11 @@
-import {SaveJsonFile} from "./FileUtils.ts";
+import {AddUnitTagToManifest, AddWeaponTagToManifest} from "./TagsHelpers.ts";
+
 
 export function GenerateUniforms() {
-    let weapon = {
-        "weapon_tags": [
-            {
-                "name": "structure",
-                "localized_name": "unit_tag_name.structure"
-            },
-            {
-                "name": "strikecraft",
-                "localized_name": "unit_tag_name.strikecraft"
-            }]
-    }
-    SaveJsonFile("uniforms/weapon.uniforms", weapon);
+    AddWeaponTagToManifest("structure");
+    AddUnitTagToManifest("battle_capital");
+    AddUnitTagToManifest("colony_capital");
+    AddUnitTagToManifest("support_capital");
+    AddUnitTagToManifest("carrier_capital");
+    AddUnitTagToManifest("siege_capital");
 }

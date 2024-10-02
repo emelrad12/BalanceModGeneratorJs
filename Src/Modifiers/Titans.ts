@@ -3,6 +3,6 @@ import {UnitHelpers} from "../UnitHelpers.ts";
 
 export function ApplyTitansChanges(){
     ReadModifyAndSaveMultipleJsonFiles(UnitHelpers.AllTitans, (content: any) => {
-        content.health.durability += 250;
+        content.health.durability += 100;
     });
 }

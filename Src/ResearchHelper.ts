@@ -1,7 +1,9 @@
 import {SaveJsonFile} from "./FileUtils.ts";
 
 const addedTech: string[] = []
-
+export function CreateResearchManifestFile() {
+    SaveJsonFile("entities/research_subject.entity_manifest", {ids: addedTech});
+}
 export class Price {
     constructor(credits: number, metal: number, crystal: number) {
         this.credits = credits;
@@ -71,11 +73,6 @@ export function AddToPlayerNewCategory(player: any, isMil: boolean, category: st
         });
         return;
     }
-
-}
-
-export function CreateManifestFile() {
-    SaveJsonFile("entities/research_subject.entity_manifest", {ids: addedTech});
 }
 
 export function SaveTech(tech: any) {

@@ -3,7 +3,7 @@ import {UnitHelpers} from "../UnitHelpers.ts";
 
 export function ApplyStarBaseChanges(){
     ReadModifyAndSaveMultipleJsonFiles(UnitHelpers.AllStarbases, (content: any) => {
-        content.health.durability += 150;
+        content.health.durability += 100;
         content.health.levels[0].max_hull_points *= 2;
         content.health.levels[0].max_armor_points *= 2;
         content.health.levels[0].max_shield_points *= 2;
