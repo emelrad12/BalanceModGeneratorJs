@@ -1,8 +1,8 @@
-import {CopyExistingAbilityAsNewOne} from "../AbilityHelpers.ts";
-import {ReadModifyAndSaveMultipleJsonFiles, SaveJsonFile} from "../FileUtils.ts";
+import {AddBuffToManifest, CopyExistingAbilityAsNewOne} from "../AbilityHelpers.ts";
+import {LoadJsonFile, ReadModifyAndSaveMultipleJsonFiles, SaveJsonFile} from "../FileUtils.ts";
 import {UnitHelpers} from "../UnitHelpers.ts";
 
-let free = true;
+let free = false;
 
 function GetBase(newItemName: string, unit_modifier: any, required_tag: string) {
     return {
@@ -106,6 +106,9 @@ function Preprocess(ability: any, actionDataSource: any) {
     actionDataSource.level_count = 1;
     for (let item of actionDataSource.action_values) {
         item.action_value.values = [item.action_value.values[item.action_value.values.length - 1]];
+        if (item.action_value.ratio !== undefined) {
+            item.action_value.ratio.ratio_values = [item.action_value.ratio.ratio_values[item.action_value.ratio.ratio_values.length - 1]];
+        }
     }
 }
 
@@ -152,7 +155,29 @@ function SolAbility() {
     let newItemName = "sol_super_capital";
     CopyExistingAbilityAsNewOne("advent_carrier_capital_ship_anima_tempest", newItemName, (ability, actionDataSource) => {
         Preprocess(ability, actionDataSource);
+        let onFightersBuff = LoadJsonFile("entities/advent_carrier_capital_ship_anima_tempest_on_fighters.buff")!;
+        let onTargetBuff = LoadJsonFile("entities/advent_carrier_capital_ship_anima_tempest_on_target.buff")!;
         ability.active_actions.actions.actions.pop();
+        ability.active_actions.actions.actions[0].operators[0].buff = `${newItemName}_on_target`;
+        onFightersBuff.trigger_event_actions[0].action_group.actions.pop();
+        onTargetBuff.time_actions[0].action_group.actions[0].operators[0].buff = `${newItemName}_on_fighters`
+        SaveJsonFile(`entities/${newItemName}_on_fighters.buff`, onFightersBuff);
+        SaveJsonFile(`entities/${newItemName}_on_target.buff`, onTargetBuff);
+        AddBuffToManifest(`${newItemName}_on_fighters`);
+        AddBuffToManifest(`${newItemName}_on_target`);
+        PostProcess(newItemName, "carrier_capital");
+    })
+}
+
+function MarzaAbility() {
+    let newItemName = "marza_super_capital";
+    CopyExistingAbilityAsNewOne("trader_rebel_titan_explosive_shot", newItemName, (ability, actionDataSource) => {
+        Preprocess(ability, actionDataSource);
+        let onSpawnerBuff = LoadJsonFile("entities/trader_rebel_titan_explosive_shot_on_spawner.buff")!;
+        ability.active_actions.actions.actions[0].operators[0].buff = `${newItemName}_on_spawner`;
+        ability.active_actions.actions.actions[0].operators.pop();
+        SaveJsonFile(`entities/${newItemName}_on_spawner.buff`, onSpawnerBuff);
+        AddBuffToManifest(`${newItemName}_on_spawner`);
         PostProcess(newItemName, "siege_capital");
     })
 }
@@ -162,4 +187,5 @@ export function GenerateSuperCapitalItems() {
     AkkanAbility();
     DuronAbility();
     SolAbility();
+    MarzaAbility();
 }

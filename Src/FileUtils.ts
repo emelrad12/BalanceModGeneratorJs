@@ -19,7 +19,7 @@ function CreateDirectoryForFileIfNotExists(filePath: string) {
     }
 }
 
-export function LoadJsonFile(filePath: string): object | undefined {
+export function LoadJsonFile(filePath: string): any | undefined {
     if (alreadyModifiedFiles.has(filePath)) return alreadyModifiedFiles.get(filePath)!;
     filePath = sourceFilesPath + filePath;
     if (!fs.existsSync(filePath)) {

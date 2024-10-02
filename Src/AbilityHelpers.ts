@@ -17,6 +17,18 @@ export function CreateAbilitiesManifestFile() {
     });
 }
 
+export function AddAbilityToManifest(ability: string) {
+    abilitiesToAddToManifest.add(ability);
+}
+
+export function AddActionDataSourceToManifest(actionDataSource: string) {
+    actionDataSourcesToAddToManifest.add(actionDataSource);
+}
+
+export function AddBuffToManifest(buff: string) {
+    buffToAddToManifest.add(buff);
+}
+
 export function CopyExistingAbilityAsNewOne(existing: string, newId: string, modifyFunction: (ability: any, actionDataSource: any, buff: any) => void) {
     let abilityFile = `entities/${existing}.ability`;
     let actionDataSourceFile = `entities/${existing}.action_data_source`;
