@@ -11,13 +11,13 @@ import {
 const techToAdd: any[] = [];
 
 function GenericRepeatableCost(i: number) {
-    return new Price(0, 2000 + 1000 * i, 2000 + 1000 * i);
+    return new Price(0, 1000 + 500 * i, 1000 + 500 * i);
 }
 
 function GenericRepeatableExotic(i: number) {
     return [{
         exotic_type: "ultimate",
-        count: 10 + 2 * i
+        count: 3 + 3 * i
     }];
 }
 
@@ -126,6 +126,9 @@ function GenerateStructureTechs() {
                     "tags": ["structure"]
                 }],
         };
+        let cost = GenericRepeatableExotic(i);
+        cost[0].count /= 2;
+        cost[0].count = Math.ceil(cost[0].count)
         let tech = CreateResearchSubjectData("defensive_structure_upgrade_" + i,
             ":Boosts defensive structures.",
             "trader_unlock_starbase_improve_weapon_item_research_subject_hud_icon",
@@ -135,7 +138,7 @@ function GenerateStructureTechs() {
             [i, 2],
             250,
             GenericRepeatableCost(i),
-            GenericRepeatableExotic(i),
+            cost,
             effects,
             lastTech ? [[lastTech.IdName]] : []);
 

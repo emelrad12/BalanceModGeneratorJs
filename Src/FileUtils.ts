@@ -8,7 +8,7 @@ const alreadyModifiedFiles = new Map<string, object>();
 
 export function Init() {
     if (fs.existsSync(targetFilesPath)) {
-        // fs.rmSync(targetFilesPath, {recursive: true});
+        fs.rmSync(targetFilesPath, {recursive: true});
     }
 }
 
@@ -20,6 +20,7 @@ function CreateDirectoryForFileIfNotExists(filePath: string) {
 }
 
 export function LoadJsonFile(filePath: string): any | undefined {
+    filePath = filePath.replaceAll("\\", "/");
     if (alreadyModifiedFiles.has(filePath)) return alreadyModifiedFiles.get(filePath)!;
     filePath = sourceFilesPath + filePath;
     if (!fs.existsSync(filePath)) {
@@ -34,6 +35,7 @@ function IsNumberAndNan(value: any): boolean {
 }
 
 export function SaveJsonFile(filePath: string, content: object) {
+    filePath = filePath.replaceAll("\\", "/");
     alreadyModifiedFiles.set(filePath, content);
     filePath = targetFilesPath + filePath;
     const jsonContent = JSON.stringify(content, (key, value) => {
@@ -44,13 +46,14 @@ export function SaveJsonFile(filePath: string, content: object) {
     fs.writeFileSync(filePath, jsonContent);
 }
 
-function ReadModifyAndSaveJsonFile(filePath: string, modify: (content: object) => void) {
+function ReadModifyAndSaveJsonFile(filePath: string, modify: ((content: object) => boolean | undefined) | ((content: object) => void)) {
     let content = LoadJsonFile(filePath)!;
-    modify(content);
+    if (modify(content) === false)
+        return;
     SaveJsonFile(filePath, content);
 }
 
-export function ReadModifyAndSaveMultipleJsonFiles(filePaths: string[], modify: (content: object) => void) {
+export function ReadModifyAndSaveMultipleJsonFiles(filePaths: string[], modify: ((content: object) => boolean | undefined) | ((content: object) => void)) {
     if (filePaths.length === 0) {
         console.warn("No files found for modification.");
         return;
@@ -95,7 +98,6 @@ export function FindFilesByPattern(pattern: string): string[] {
 export function FindFilesBySimplePattern(first: string, second: string): string[] {
     return FindFilesByPatternImpl(sourceFilesPath, ".*" + first + ".*" + second + ".*");
 }
-
 
 function keepLastTwoSegments(fullPath: string): string {
     // Normalize the path to ensure consistent format

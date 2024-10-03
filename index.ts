@@ -7,11 +7,13 @@ import {CreateResearchManifestFile} from "./Src/ResearchHelper.ts";
 import {GenerateUniforms} from "./Src/UniformHelpers.ts";
 import {ApplyTags} from "./Src/Modifiers/ApplyTags.ts";
 import {CreateAbilitiesManifestFile} from "./Src/AbilityHelpers.ts";
-import {GenerateSuperCapitalItems} from "./Src/Modifiers/ItemsAsAbilities.ts";
+import {GenerateSuperCapitalTraderItems} from "./Src/Modifiers/SuperCapitalsTrader.ts";
 import {CreateItemManifestFile} from "./Src/ItemHelpers.ts";
 import {GenerateFactionTechs} from "./Src/Modifiers/FactionTechs.ts";
 import {CreateUnitTagsManifestFile, CreateWeaponTagsManifestFile} from "./Src/TagsHelpers.ts";
-
+import {GenerateSuperCapitalsAdventItems} from "./Src/Modifiers/SuperCapitalsAdvent.ts";
+import {GenerateSuperCapitalVasariItems} from "./Src/Modifiers/SuperCapitaVasari.ts";
+let startTime = Date.now();
 Init();
 ApplyTags();
 {
@@ -19,7 +21,9 @@ ApplyTags();
     ApplyStarBaseChanges();
     ApplyTitansChanges();
     ApplyRepeeatableTechs();
-    GenerateSuperCapitalItems();
+    GenerateSuperCapitalTraderItems();
+    GenerateSuperCapitalsAdventItems();
+    GenerateSuperCapitalVasariItems();
     GenerateFactionTechs();
 }
 
@@ -29,3 +33,4 @@ CreateItemManifestFile();
 GenerateUniforms();
 CreateWeaponTagsManifestFile();
 CreateUnitTagsManifestFile();
+console.log(`Finished in ${Date.now() - startTime}ms`);

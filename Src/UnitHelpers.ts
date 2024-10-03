@@ -1,4 +1,11 @@
+export enum Race {
+    TEC,
+    Advent,
+    Vasari
+}
+
 export class UnitHelpers {
+
     public static AllExtractors: string[] = [
         "entities/advent_crystal_extractor_structure.unit",
         "entities/advent_metal_extractor_structure.unit",
@@ -27,6 +34,36 @@ export class UnitHelpers {
         "entities/advent_loyalist.player",
         "entities/advent_rebel.player"
     ];
+
+    public static Trader: string[] = [
+        "entities/trader_loyalist.player",
+        "entities/trader_rebel.player"
+    ];
+
+    public static Vasari: string[] = [
+        "entities/vasari_loyalist.player",
+        "entities/vasari_rebel.player"
+    ];
+
+    public static TraderLoyalist: string[] = ["entities/trader_loyalist.player"];
+    public static TraderRebel: string[] = ["entities/trader_rebel.player"];
+    public static AdventLoyalist: string[] = ["entities/advent_loyalist.player"];
+    public static AdventRebel: string[] = ["entities/advent_rebel.player"];
+    public static VasariLoyalist: string[] = ["entities/vasari_loyalist.player"];
+    public static VasariRebel: string[] = ["entities/vasari_rebel.player"];
+
+    public static GetFactionBasedOnId(id: Race) {
+        if (id === Race.TEC) {
+            return UnitHelpers.Trader;
+        }
+        if (id === Race.Advent) {
+            return UnitHelpers.Advent;
+        }
+        if (id === Race.Vasari) {
+            return UnitHelpers.Vasari;
+        }
+        throw new Error("Invalid faction id");
+    }
 
     public static AllFactions: string[] = [
         "entities/trader_loyalist.player",
