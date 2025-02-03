@@ -10,6 +10,7 @@ export function Init() {
     if (fs.existsSync(targetFilesPath)) {
         fs.rmSync(targetFilesPath, {recursive: true});
     }
+    CreateMetadataFile();
 }
 
 function CreateDirectoryForFileIfNotExists(filePath: string) {
@@ -17,6 +18,15 @@ function CreateDirectoryForFileIfNotExists(filePath: string) {
     if (!fs.existsSync(directory)) {
         fs.mkdirSync(directory, {recursive: true});
     }
+}
+
+function CreateMetadataFile() {
+    SaveJsonFile(".mod_meta_data", {
+        "compatibility_version": 2,
+        "display_version": "1.0.0",
+        "display_name": "The best overhaul mod",
+        "short_description": "The best overhaul mod",
+    });
 }
 
 export function LoadJsonFile(filePath: string): any | undefined {

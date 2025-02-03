@@ -120,12 +120,12 @@ export function ApplyEconomyChanges() {
     });
 
     ReadModifyAndSaveMultipleJsonFiles(FindFilesBySimplePattern("max_supply", "research_subject"), (content: any) => {
-        content.price.credits *= 5;
-        content.price.metal *= 5;
-        content.price.crystal *= 5;
+        content.price.credits *= 3;
+        content.price.metal *= 3;
+        content.price.crystal *= 3;
     });
-    Allow2Titans();
-    AllowOtherFactionTitan();
-    MakeAllRebelTitanUnlockFromLoyalistTech();
-    FixShipComponentsForTitansPerFaction();
+    // Allow2Titans();
+    // AllowOtherFactionTitan();
+    // MakeAllRebelTitanUnlockFromLoyalistTech();
+    // FixShipComponentsForTitansPerFaction();
 }
