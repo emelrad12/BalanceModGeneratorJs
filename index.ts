@@ -13,6 +13,7 @@ import {GenerateFactionTechs} from "./Src/Modifiers/FactionTechs.ts";
 import {CreateUnitTagsManifestFile, CreateWeaponTagsManifestFile} from "./Src/TagsHelpers.ts";
 import {GenerateSuperCapitalsAdventItems} from "./Src/Modifiers/SuperCapitalsAdvent.ts";
 import {GenerateSuperCapitalVasariItems} from "./Src/Modifiers/SuperCapitaVasari.ts";
+import {ApplyDifficultyModifiers} from "./Src/Modifiers/Difficulty.ts";
 let startTime = Date.now();
 Init();
 ApplyTags();
@@ -25,6 +26,7 @@ ApplyTags();
     GenerateSuperCapitalsAdventItems();
     GenerateSuperCapitalVasariItems();
     GenerateFactionTechs();
+    ApplyDifficultyModifiers();
 }
 
 CreateResearchManifestFile();

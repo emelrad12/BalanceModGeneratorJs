@@ -24,7 +24,7 @@ function GetBase(newItemName: string, unit_modifier: any, required_tag: string, 
             }, {
                 "modifier_type": "range",
                 "value_behavior": "scalar",
-                "values": [0.25]
+                "values": [0.5]
             }],
         "unit_modifiers": unit_modifier,
         "max_count_on_unit": 1,
@@ -59,8 +59,8 @@ function GetModifiersForTEC() {
 function GetPriceForTEC() {
     return {
         "credits": 4000.0,
-        "metal": 3000.0,
-        "crystal": 3000.0
+        "metal": 2500.0,
+        "crystal": 2500.0
     }
 }
 
@@ -87,8 +87,8 @@ function GetModifiersForAdvent() {
 function GetPriceForAdvent() {
     return {
         "credits": 4000.0,
-        "metal": 3000.0,
-        "crystal": 3000.0
+        "metal": 2500.0,
+        "crystal": 2500.0
     }
 }
 

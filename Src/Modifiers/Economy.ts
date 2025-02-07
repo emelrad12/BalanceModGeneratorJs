@@ -124,7 +124,7 @@ export function ApplyEconomyChanges() {
         content.price.metal *= 3;
         content.price.crystal *= 3;
     });
-    // Allow2Titans();
+    Allow2Titans();
     // AllowOtherFactionTitan();
     // MakeAllRebelTitanUnlockFromLoyalistTech();
     // FixShipComponentsForTitansPerFaction();
