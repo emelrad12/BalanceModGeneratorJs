@@ -39,5 +39,5 @@ function ApplyTagsToCapital() {
 
 export function ApplyTags() {
     ApplyStructureTags();
-    ApplyTagsToCapital();
+    // ApplyTagsToCapital();
 }

@@ -147,10 +147,10 @@ function GenerateStructureTechs() {
     }
 }
 
-export function ApplyRepeeatableTechs() {
-    GenerateOffensiveTechs();
-    GenerateDefensiveTechs();
-    GenerateStructureTechs();
+export function ApplyRepeatableTechs() {
+    // GenerateOffensiveTechs();
+    // GenerateDefensiveTechs();
+    // GenerateStructureTechs();
     ReadModifyAndSaveMultipleJsonFiles(UnitHelpers.AllFactions, (content: any) => {
         for (let tech of techToAdd) {
             AddToPlayerResearchSubject(content, tech);

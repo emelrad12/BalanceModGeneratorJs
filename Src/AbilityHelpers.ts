@@ -10,7 +10,7 @@ export function CreateAbilitiesManifestFile() {
         ids: Array.from(abilitiesToAddToManifest)
     });
     SaveJsonFile("entities/action_data_source.entity_manifest", {
-        ids: Array.from(abilitiesToAddToManifest)
+        ids: Array.from(actionDataSourcesToAddToManifest)
     });
     SaveJsonFile("entities/buff.entity_manifest", {
         ids: Array.from(buffToAddToManifest)

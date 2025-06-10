@@ -53,6 +53,14 @@ export function AddToPlayerResearchSubject(player: any, researchSubject: any) {
     player.research.research_subjects.push(name);
 }
 
+export function AddToPlayerStartingResearchSubject(player: any, researchSubject: any) {
+    let name = researchSubject.IdName;
+    if (player.research.starting_research_subjects === undefined) {
+        player.research.starting_research_subjects = [];
+    }
+    player.research.starting_research_subjects.push(name);
+}
+
 export function IdNameToName(name: string): string {
     return `:${name.replace(/_/g, " ").toUpperCase()}`;
 }

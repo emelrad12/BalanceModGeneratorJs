@@ -4,7 +4,9 @@ import {readFileSync} from 'fs';
 
 const sourceFilesPath = path.join(process.env['ProgramFiles(x86)']!, 'Steam', 'steamapps', 'common', 'Sins2') + '\\';
 const targetFilesPath = path.join(process.env['USERPROFILE']!, "AppData", "Local", "sins2", "mods", "TheBestOverhaulMod") + '\\';
-const alreadyModifiedFiles = new Map<string, object>();
+const alreadyOpenedJsonFiles = new Map<string, object>();
+const pendingSaves = new Map<string, object>();
+const alreadySeenFolders: Map<string, string[]> = new Map();
 
 export function Init() {
     if (fs.existsSync(targetFilesPath)) {
@@ -31,7 +33,7 @@ function CreateMetadataFile() {
 
 export function LoadJsonFile(filePath: string): any | undefined {
     filePath = filePath.replaceAll("\\", "/");
-    if (alreadyModifiedFiles.has(filePath)) return alreadyModifiedFiles.get(filePath)!;
+    if (alreadyOpenedJsonFiles.has(filePath)) return alreadyOpenedJsonFiles.get(filePath)!;
     filePath = sourceFilesPath + filePath;
     if (!fs.existsSync(filePath)) {
         return undefined;
@@ -46,14 +48,20 @@ function IsNumberAndNan(value: any): boolean {
 
 export function SaveJsonFile(filePath: string, content: object) {
     filePath = filePath.replaceAll("\\", "/");
-    alreadyModifiedFiles.set(filePath, content);
+    alreadyOpenedJsonFiles.set(filePath, content);
     filePath = targetFilesPath + filePath;
-    const jsonContent = JSON.stringify(content, (key, value) => {
-        if (key == "IdName") return;
-        if (value !== null && !IsNumberAndNan(value)) return value
-    }, 4);
-    CreateDirectoryForFileIfNotExists(filePath);
-    fs.writeFileSync(filePath, jsonContent);
+    pendingSaves.set(filePath, content);
+}
+
+export function SaveAllPendingJsonFiles() {
+    pendingSaves.forEach((content, filePath) => {
+        const jsonContent = JSON.stringify(content, (key, value) => {
+            if (key == "IdName") return;
+            if (value !== null && !IsNumberAndNan(value)) return value
+        }, 4);
+        CreateDirectoryForFileIfNotExists(filePath);
+        fs.writeFileSync(filePath, jsonContent);
+    });
 }
 
 function ReadModifyAndSaveJsonFile(filePath: string, modify: ((content: object) => boolean | undefined) | ((content: object) => void)) {
@@ -76,8 +84,13 @@ function FindFilesByPatternImpl(dir: string, regexPattern: string): string[] {
     let result: string[] = [];
 
     function searchDirectory(directory: string): void {
-        const files = fs.readdirSync(directory);
-
+        let files: string[]
+        if (alreadySeenFolders.has(directory)) {
+            files = alreadySeenFolders.get(directory)!;
+        } else {
+            files = fs.readdirSync(directory);
+            alreadySeenFolders.set(directory, files);
+        }
         files.forEach((file) => {
             const fullPath = path.join(directory, file);
             const stat = fs.statSync(fullPath);

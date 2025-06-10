@@ -5,7 +5,6 @@ export enum Race {
 }
 
 export class UnitHelpers {
-
     public static AllExtractors: string[] = [
         "entities/advent_crystal_extractor_structure.unit",
         "entities/advent_metal_extractor_structure.unit",
@@ -80,6 +79,10 @@ export class UnitHelpers {
 
     public static AI: string[] = [
         "uniforms/player_ai.uniforms"
+    ];
+
+    public static Planet: string[] = [
+        "uniforms/planet.uniforms"
     ];
 
     public static AllStrikeCraft: string[] = [

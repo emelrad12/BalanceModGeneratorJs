@@ -10,11 +10,15 @@ export function ApplyStarBaseChanges() {
         content.build.price.credits *= 2;
         content.build.price.metal *= 2;
         content.build.price.crystal *= 2;
-        content.build.exotic_price[0].count *= 2;
     });
 
     ReadModifyAndSaveMultipleJsonFiles(FindFilesBySimplePattern("starbase", "weapon"), (content: any) => {
         content.cooldown_duration /= 2;
+    });
+
+    ReadModifyAndSaveMultipleJsonFiles(FindFilesByPattern(".*weapon"), (content: any) => {
+        if (content.range === undefined || !content.tags.includes("structure")) return false;
+        content.range *= 2;
     });
 
     ReadModifyAndSaveMultipleJsonFiles(FindFilesByPattern('^.*\\.unit_item$'), (content: any) => {
