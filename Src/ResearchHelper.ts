@@ -11,9 +11,17 @@ export class Price {
         this.crystal = crystal;
     }
 
-    credits: number | undefined;
-    metal: number | undefined;
-    crystal: number | undefined;
+    credits: number;
+    metal: number;
+    crystal: number;
+
+    Multiply(factor: number): Price {
+        return new Price(
+            this.credits * factor,
+            this.metal * factor,
+            this.crystal * factor
+        );
+    }
 }
 
 export class ExoticPrice {

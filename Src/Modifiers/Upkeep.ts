@@ -1,60 +1,39 @@
-import {FindFilesByPattern, ReadModifyAndSaveMultipleJsonFiles, SaveJsonFile} from "../FileUtils.ts";
-import {AddUnitTagToManifest} from "../TagsHelpers.ts";
+import {ReadModifyAndSaveMultipleJsonFiles, SaveJsonFile} from "../FileUtils.ts";
 import {AddToPlayerResearchSubject, AddToPlayerStartingResearchSubject, CreateResearchSubjectData, Price} from "../ResearchHelper.ts";
 import {UnitHelpers} from "../UnitHelpers.ts";
 import {AddActionDataSourceToManifest, AddBuffToManifest} from "../AbilityHelpers.ts";
+import {Race} from "../UnitHelpers.ts"
 
-const availableSupplyTags = [2, 5, 10, 30, 50, 100];
-
-function GetListOfClosestMatchingSumOfTags(supply: number): number[] {
-    const result: number[] = [];
-    let sum = 0;
-    for (const tag of availableSupplyTags) {
-        if (sum + tag <= supply) {
-            sum += tag;
-            result.push(tag);
-        }
-    }
-    return result;
-}
-
-function GetSupplyTag(supply: number): string {
-    const nthLetter = String.fromCharCode(97 + availableSupplyTags.indexOf(supply));
-    return `supply${nthLetter}`;
-}
+const availableSupplyTags = [2];
 
 export function ApplyUpkeepChanges() {
-    CreateTagsPerUnitSupply();
-    CreateUpkeepTechs();
+    CreateUpkeepTechs(Race.Advent);
+    CreateUpkeepTechs(Race.TEC);
+    CreateUpkeepTechs(Race.Vasari);
 }
 
-function CreateTagsPerUnitSupply() {
-    ReadModifyAndSaveMultipleJsonFiles(FindFilesByPattern(".*unit"), (content: any) => {
-        if (content.build === undefined || content.build.supply_cost === undefined || content.tags.includes("structure")) {
-            return false; // Skip stuff that is not mobile units
-        }
-
-        const supply = content.build.supply_cost;
-        const supplyTags = GetListOfClosestMatchingSumOfTags(supply);
-        for (const tag of supplyTags) {
-            const supplyTag = GetSupplyTag(tag);
-            content.tags.push(supplyTag);
-        }
-        // const tag = GetSupplyTag(supply);
-        // if (!alreadySeenSupply.has(supply)) {
-        //     alreadySeenSupply.add(supply);
-        //     AddUnitTagToManifest(tag);
-        // }
-        // content.tags.push(tag);
-    });
-    availableSupplyTags.forEach((item) => {
-        const supply = GetSupplyTag(item);
-        AddUnitTagToManifest(supply);
-    });
+function GetSupplyCostsBasedOnRace(race: Race) {
+    switch (race) {
+        case (Race.Advent):
+            return GetSupplyCosts(new Price(20 / 1000, 10 / 1000, 10 / 1000));
+        case (Race.TEC):
+            return GetSupplyCosts(new Price(20 / 1000, 7.5 / 1000, 7.5 / 1000));
+        case (Race.Vasari):
+            return GetSupplyCosts(new Price(0 / 1000, 20 / 1000, 15 / 1000));
+    }
 }
 
-function CreateBuffFile(supply: number, name: string) {
-    const value = supply;
+function GetSupplyCosts(base: Price) {
+    return {
+        corvette: base.Multiply(3),
+        frigate: base.Multiply(5),
+        cruiser: base.Multiply(10),
+        capital_ship: base.Multiply(50),
+        titan: base.Multiply(300),
+    }
+}
+
+function CreateBuffFile(name: string) {
     const buff = {
         "version": 0,
         "stacking_limit": {
@@ -66,13 +45,13 @@ function CreateBuffFile(supply: number, name: string) {
         "make_dead_on_current_spawner_ownership_changed_from_buff_ownership": true,
         "empire_modifiers": [
             {
-                "buff_empire_modifier_id": value + "_credit_upkeep_modifier"
+                "buff_empire_modifier_id": name + "_credit_upkeep_modifier"
             },
             {
-                "buff_empire_modifier_id": value + "_metal_upkeep_modifier"
+                "buff_empire_modifier_id": name + "_metal_upkeep_modifier"
             },
             {
-                "buff_empire_modifier_id": value + "_crystal_upkeep_modifier"
+                "buff_empire_modifier_id": name + "_crystal_upkeep_modifier"
             }
         ],
         "gui": {
@@ -86,7 +65,7 @@ function CreateBuffFile(supply: number, name: string) {
                         {
                             "rendering_type": "single_value",
                             "label_text": ":credit_upkeep",
-                            "value_id": value + "_credit_upkeep",
+                            "value_id": name + "_credit_upkeep",
                             "value_color": "negative",
                             "value_float_format": "three_decimal_place_with_sign",
                             "value_suffix": "per_second"
@@ -98,7 +77,7 @@ function CreateBuffFile(supply: number, name: string) {
                         {
                             "rendering_type": "single_value",
                             "label_text": ":metal_upkeep",
-                            "value_id": value + "_metal_upkeep",
+                            "value_id": name + "_metal_upkeep",
                             "value_color": "negative",
                             "value_float_format": "three_decimal_place_with_sign",
                             "value_suffix": "per_second"
@@ -110,7 +89,7 @@ function CreateBuffFile(supply: number, name: string) {
                         {
                             "rendering_type": "single_value",
                             "label_text": ":crystal_upkeep",
-                            "value_id": value + "_crystal_upkeep",
+                            "value_id": name + "_crystal_upkeep",
                             "value_color": "negative",
                             "value_float_format": "three_decimal_place_with_sign",
                             "value_suffix": "per_second"
@@ -124,54 +103,54 @@ function CreateBuffFile(supply: number, name: string) {
     AddBuffToManifest(name);
 }
 
-function CreateActionDataSource(value: number, name: string) {
+function CreateActionDataSource(value: Price, name: string) {
     const actionDataSource = {
         "version": 0,
         "level_count": 1,
         "action_values": [
             {
-                "action_value_id": value + "_credit_upkeep",
+                "action_value_id": name + "_credit_upkeep",
                 "action_value": {
-                    "values": [-value]
+                    "values": [-value.credits],
                 }
             },
             {
-                "action_value_id": value + "_metal_upkeep",
+                "action_value_id": name + "_metal_upkeep",
                 "action_value": {
-                    "values": [-value]
+                    "values": [-value.metal],
                 }
             },
             {
-                "action_value_id": value + "_crystal_upkeep",
+                "action_value_id": name + "_crystal_upkeep",
                 "action_value": {
-                    "values": [-value]
+                    "values": [-value.crystal],
                 }
             }
 
         ],
         "buff_empire_modifiers": [
             {
-                "buff_empire_modifier_id": value + "_credit_upkeep_modifier",
+                "buff_empire_modifier_id": name + "_credit_upkeep_modifier",
                 "buff_empire_modifier": {
                     "modifier_type": "credit_income_rate",
                     "value_behavior": "additive",
-                    "value_id": value + "_credit_upkeep"
+                    "value_id": name + "_credit_upkeep"
                 }
             },
             {
-                "buff_empire_modifier_id": value + "_metal_upkeep_modifier",
+                "buff_empire_modifier_id": name + "_metal_upkeep_modifier",
                 "buff_empire_modifier": {
                     "modifier_type": "metal_income_rate",
                     "value_behavior": "additive",
-                    "value_id": value + "_metal_upkeep"
+                    "value_id": name + "_metal_upkeep"
                 }
             },
             {
-                "buff_empire_modifier_id": value + "_crystal_upkeep_modifier",
+                "buff_empire_modifier_id": name + "_crystal_upkeep_modifier",
                 "buff_empire_modifier": {
                     "modifier_type": "crystal_income_rate",
                     "value_behavior": "additive",
-                    "value_id": value + "_crystal_upkeep"
+                    "value_id": name + "_crystal_upkeep"
                 }
             }
         ]
@@ -180,28 +159,30 @@ function CreateActionDataSource(value: number, name: string) {
     AddActionDataSourceToManifest(name);
 }
 
-function CreateUpkeepTechs() {
+function CreateUpkeepTechs(race: Race) {
+    const supplyCosts = GetSupplyCostsBasedOnRace(race);
     const effects: any = {buff_providers: []};
-    const supplyArray = Array.from(availableSupplyTags).sort((a, b) => a - b);
+    const supplyArray = ["corvette", "frigate", "cruiser", "capital_ship", "titan"];
     for (let i = 0; i < supplyArray.length; i++) {
+        const supplyTag = supplyArray[i];
         const item = {
             "scope": "all_owned_units",
             "all_owned_units_target_filter": {
                 "unit_types": [
-                    GetSupplyTag(supplyArray[i])
+                    supplyTag
                 ],
                 "ownerships": [
                     "self"
                 ]
             },
-            "action_data_source": supplyArray[i] + "_upkeep_research_subject",
-            "buff": supplyArray[i] + "_upkeep_research_subject"
+            "action_data_source": supplyTag + race.toString() + "_upkeep",
+            "buff": supplyTag + race.toString() + "_upkeep"
         }
-        CreateActionDataSource(supplyArray[i], item.action_data_source);
-        CreateBuffFile(supplyArray[i], item.buff);
+        CreateActionDataSource(supplyCosts[supplyTag as keyof typeof supplyCosts], item.action_data_source);
+        CreateBuffFile(item.buff);
         effects.buff_providers.push(item);
     }
-    const tech = CreateResearchSubjectData("upkeep_tech",
+    const tech = CreateResearchSubjectData("upkeep_tech" + race.toString(),
         ":Gives units upkeep.",
         "trader_planet_bombing_damage_0_research_subject_hud_icon",
         "trader_planet_bombing_damage_0_research_subject_tooltip_picture",
@@ -213,7 +194,7 @@ function CreateUpkeepTechs() {
         [],
         effects,
         []);
-    ReadModifyAndSaveMultipleJsonFiles(UnitHelpers.AllFactions, (content: any) => {
+    ReadModifyAndSaveMultipleJsonFiles(UnitHelpers.GetFactionBasedOnId(race), (content: any) => {
         AddToPlayerResearchSubject(content, tech);
         AddToPlayerStartingResearchSubject(content, tech);
     });

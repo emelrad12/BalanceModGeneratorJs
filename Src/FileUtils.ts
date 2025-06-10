@@ -8,6 +8,16 @@ const alreadyOpenedJsonFiles = new Map<string, object>();
 const pendingSaves = new Map<string, object>();
 const alreadySeenFolders: Map<string, string[]> = new Map();
 
+export function DeleteCrashGuardIfExists() {
+    fs.unlink("C:\\Users\\emelr\\AppData\\Local\\sins2\\crash_guard", (err) => {
+        if (err) {
+            // console.error(`No crash guard`);
+        } else {
+            console.log("Crash guard deleted.");
+        }
+    });
+}
+
 export function Init() {
     if (fs.existsSync(targetFilesPath)) {
         fs.rmSync(targetFilesPath, {recursive: true});
